@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'live_match_screen.dart'; // Import the LiveMatchScreen
 
 void main() {
   runApp(const CricketApp());
@@ -153,61 +153,6 @@ class MatchList extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class LiveMatchScreen extends StatefulWidget {
-  const LiveMatchScreen({super.key});
-
-  @override
-  State<LiveMatchScreen> createState() => _LiveMatchScreenState();
-}
-
-class _LiveMatchScreenState extends State<LiveMatchScreen> {
-  late VideoPlayerController _controller;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    // Use VideoPlayerController.networkUrl instead of VideoPlayerController.network
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'), // Replace with your live stream URL
-    )..initialize().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-      _controller.play(); // Start playing the video
-    }).catchError((error) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load live stream')),
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose(); // Dispose the controller when the screen is closed
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Live Match - India vs Australia'),
-        backgroundColor: Colors.blue,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator()) // Show loading indicator
-          : AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
-        child: VideoPlayer(_controller), // Display the video player
-      ),
     );
   }
 }
