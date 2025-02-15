@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'live_match_screen.dart'; // Import the LiveMatchScreen
+import 'package:flutter/services.dart';
+import 'live_match_screen.dart';
 
 void main() {
   runApp(const CricketApp());
 }
 
 class CricketApp extends StatelessWidget {
-  const CricketApp({super.key});
+  const CricketApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cricket App',
-      debugShowCheckedModeBanner: false, // Remove debug banner
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue, // Set primary color
+        primarySwatch: Colors.blue,
+        fontFamily: 'Roboto',
       ),
       home: const HomeScreen(),
     );
@@ -22,131 +24,257 @@ class CricketApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Set immersive UI
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.black,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'Cricket App',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0D1B2A), Color(0xFF1B263B)],
           ),
         ),
-        backgroundColor: Colors.blue, // App bar background color
-        elevation: 10, // Add shadow
-      ),
-      body: Container(
-        color: Colors.grey[200], // Set background color to light gray
-        child: const MatchList(),
+        child: Column(
+          children: [
+            // App logo and title
+            const SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.sports_cricket, color: Colors.white, size: 30),
+                    SizedBox(width: 10),
+                    Text(
+                      'Cricket App',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Match List
+            const Expanded(child: MatchList()),
+          ],
+        ),
       ),
     );
   }
 }
 
 class MatchList extends StatelessWidget {
-  const MatchList({super.key});
+  const MatchList({Key? key}) : super(key: key);
 
   // Sample match data
   final List<Map<String, String>> matches = const [
     {
-      'team1': 'India',
-      'team2': 'Australia',
-      'date': 'Oct 25, 2023',
-      'venue': 'Wankhede Stadium, Mumbai',
-    },
-    {
-      'team1': 'England',
-      'team2': 'New Zealand',
-      'date': 'Oct 26, 2023',
-      'venue': 'Lord\'s, London',
-    },
-    {
-      'team1': 'Pakistan',
-      'team2': 'South Africa',
-      'date': 'Oct 27, 2023',
-      'venue': 'Gaddafi Stadium, Lahore',
-    },
-    {
-      'team1': 'West Indies',
+      'team1': 'Australia',
       'team2': 'Sri Lanka',
-      'date': 'Oct 28, 2023',
-      'venue': 'Kensington Oval, Barbados',
+      'date': '16 Feb 2025',
+      'venue': 'B. Damadesa Stadium, Colombo',
+      'status': 'Live',
+      'matchType': '3rd Test',
+      'team1Logo': 'https://flagcdn.com/w320/au.png',
+      'team2Logo': 'https://flagcdn.com/w320/lk.png',
+    },
+    {
+      'team1': 'India',
+      'team2': 'Pakistan',
+      'date': '23 Feb 2025',
+      'venue': 'Dubai Stadium, Uae',
+      'status': 'Upcoming',
+      'matchType': 'Champions Trophy',
+      'team1Logo': 'https://flagcdn.com/w320/in.png',
+      'team2Logo': 'https://flagcdn.com/w320/pk.png',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16), // Add padding around the list
       itemCount: matches.length,
+      padding: const EdgeInsets.all(16),
       itemBuilder: (context, index) {
         final match = matches[index];
-        final isIndiaVsAustralia =
-            match['team1'] == 'India' && match['team2'] == 'Australia';
+        final isLive = match['status'] == 'Live';
 
-        return Card(
-          elevation: 5, // Add shadow to the card
-          margin: const EdgeInsets.only(bottom: 16), // Add margin between cards
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12), // Rounded corners
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16), // Add padding inside the card
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LiveMatchScreen(),
+              ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
+            ),
+            child: Stack(
               children: [
-                // Match teams
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${match['team1']} vs ${match['team2']}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                // Match Info
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Match Type and Live Indicator
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            match['matchType']!,
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (isLive)
+                            Row(
+                              children: [
+                                Container(
+                                  width: 10,
+                                  height: 10,
+                                  margin: const EdgeInsets.only(right: 6),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const Text(
+                                  'LIVE',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Team Logos and Names
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Team 1
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(match['team1Logo']!),
+                                radius: 30,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                match['team1']!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // VS Text
+                          const Text(
+                            'VS',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+
+                          // Team 2
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(match['team2Logo']!),
+                                radius: 30,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                match['team2']!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Date and Venue
+                      Text(
+                        'Date: ${match['date']}',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Venue: ${match['venue']}',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Tap Indicator
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 10,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        bottomRight: Radius.circular(16),
                       ),
                     ),
-                    const Icon(Icons.sports_cricket, color: Colors.blue), // Placeholder for team logo
-                  ],
-                ),
-                const SizedBox(height: 8), // Add spacing
-                // Match date
-                Text(
-                  'Date: ${match['date']}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(height: 8), // Add spacing
-                // Match venue
-                Text(
-                  'Venue: ${match['venue']}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-                // Watch Live Button (only for India vs Australia)
-                if (isIndiaVsAustralia) // Conditionally show the button
-                  const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    // Navigate to the live match screen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LiveMatchScreen(),
+                    child: const Text(
+                      'Tap to Watch',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
-                    );
-                  },
-                  child: const Text('Watch Live'),
+                    ),
+                  ),
                 ),
               ],
             ),
