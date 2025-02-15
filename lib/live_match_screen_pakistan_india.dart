@@ -2,30 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/services.dart';
 
-class LiveMatchScreen extends StatefulWidget {
-  const LiveMatchScreen({Key? key}) : super(key: key);
+class LiveMatchScreenPakistanIndia extends StatefulWidget {
+  const LiveMatchScreenPakistanIndia({Key? key}) : super(key: key);
 
   @override
-  State<LiveMatchScreen> createState() => _LiveMatchScreenState();
+  State<LiveMatchScreenPakistanIndia> createState() => _LiveMatchScreenPakistanIndiaState();
 }
 
-class _LiveMatchScreenState extends State<LiveMatchScreen> {
+class _LiveMatchScreenPakistanIndiaState extends State<LiveMatchScreenPakistanIndia> {
   late BetterPlayerController _betterPlayerController;
 
   @override
   void initState() {
     super.initState();
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky); // Hide notification bar during video playback
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     BetterPlayerConfiguration betterPlayerConfiguration = BetterPlayerConfiguration(
-      fit: BoxFit.fill, // Maintain 16:9 aspect ratio in portrait
+      fit: BoxFit.fill,
       autoPlay: true,
       looping: false,
-      fullScreenByDefault: false,
-      allowedScreenSleep: false,
       expandToFill: true,
-      aspectRatio: 16 / 9, // Set 16:9 aspect ratio for portrait
+      deviceOrientationsOnFullScreen: [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+      allowedScreenSleep: false,
       controlsConfiguration: BetterPlayerControlsConfiguration(
         backgroundColor: Colors.black,
         controlBarColor: Colors.transparent,
@@ -39,7 +40,7 @@ class _LiveMatchScreenState extends State<LiveMatchScreen> {
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      "https://muc2.mylife1.top:8088/live/webcricm05/playlist.m3u8?vidictid=201344412598&id=114516&pk=d17cea96af0731f9c2b883bd5bd0d75a0deebed24cbb21b4ef64136b7beefa450feb9c38c8406e3b75059d0695869b9ab9102483c4724e2eae580032a2302fc1",
+      'https://mut1.mylife1.top:8088/live/webcricu19/playlist.m3u8?vidictid=201349344524&id=115680&pk=d17cea96af0731f9c2b883bd5bd0d75a0deebed24cbb21b4ef64136b7beefa450feb9c38c8406e3b75059d0695869b9ab9102483c4724e2eae580032a2302fc1',
       videoFormat: BetterPlayerVideoFormat.hls,
     );
 
@@ -50,17 +51,17 @@ class _LiveMatchScreenState extends State<LiveMatchScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: BetterPlayer(controller: _betterPlayerController),
-      backgroundColor: Colors.black,
-    );
+  void dispose() {
+    _betterPlayerController.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    super.dispose();
   }
 
   @override
-  void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge); // Restore system UI after playback
-    _betterPlayerController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: BetterPlayer(controller: _betterPlayerController),
+    );
   }
 }

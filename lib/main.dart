@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'live_match_screen.dart';
+import 'live_match_screen_pakistan_india.dart'; // Import the new screen
 
 void main() {
   runApp(const CricketApp());
 }
 
 class CricketApp extends StatelessWidget {
-  const CricketApp({Key? key}) : super(key: key);
+  const CricketApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +25,10 @@ class CricketApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Set immersive UI
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -49,7 +49,6 @@ class HomeScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-            // App logo and title
             const SafeArea(
               child: Padding(
                 padding: EdgeInsets.all(16.0),
@@ -70,8 +69,6 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Match List
             const Expanded(child: MatchList()),
           ],
         ),
@@ -81,9 +78,8 @@ class HomeScreen extends StatelessWidget {
 }
 
 class MatchList extends StatelessWidget {
-  const MatchList({Key? key}) : super(key: key);
+  const MatchList({super.key});
 
-  // Sample match data
   final List<Map<String, String>> matches = const [
     {
       'team1': 'Australia',
@@ -99,7 +95,7 @@ class MatchList extends StatelessWidget {
       'team1': 'India',
       'team2': 'Pakistan',
       'date': '23 Feb 2025',
-      'venue': 'Dubai Stadium, Uae',
+      'venue': 'Dubai Stadium, UAE',
       'status': 'Upcoming',
       'matchType': 'Champions Trophy',
       'team1Logo': 'https://flagcdn.com/w320/in.png',
@@ -118,12 +114,21 @@ class MatchList extends StatelessWidget {
 
         return GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const LiveMatchScreen(),
-              ),
-            );
+            if (match['team1'] == 'India' && match['team2'] == 'Pakistan') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LiveMatchScreenPakistanIndia(),
+                ),
+              );
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LiveMatchScreen(),
+                ),
+              );
+            }
           },
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
@@ -132,9 +137,7 @@ class MatchList extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(128, 0, 0, 0), // 128 is 50% opacity
-                  // 128 is 50% opacity in 0-255 scale
-
+                  color: const Color.fromARGB(128, 0, 0, 0),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 )
@@ -142,13 +145,11 @@ class MatchList extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                // Match Info
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Match Type and Live Indicator
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -184,12 +185,9 @@ class MatchList extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-
-                      // Team Logos and Names
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Team 1
                           Column(
                             children: [
                               CircleAvatar(
@@ -206,8 +204,6 @@ class MatchList extends StatelessWidget {
                               ),
                             ],
                           ),
-
-                          // VS Text
                           const Text(
                             'VS',
                             style: TextStyle(
@@ -216,8 +212,6 @@ class MatchList extends StatelessWidget {
                               fontSize: 20,
                             ),
                           ),
-
-                          // Team 2
                           Column(
                             children: [
                               CircleAvatar(
@@ -237,8 +231,6 @@ class MatchList extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-
-                      // Date and Venue
                       Text(
                         'Date: ${match['date']}',
                         style: const TextStyle(color: Colors.grey),
@@ -251,8 +243,6 @@ class MatchList extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                // Tap Indicator
                 Positioned(
                   bottom: 0,
                   right: 0,
