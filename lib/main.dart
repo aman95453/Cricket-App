@@ -132,7 +132,9 @@ class MatchList extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: const Color.fromARGB(128, 0, 0, 0), // 128 is 50% opacity
+                  // 128 is 50% opacity in 0-255 scale
+
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 )
