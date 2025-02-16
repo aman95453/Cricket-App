@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';  // Import Firestore for testing
 import 'live_match_screen.dart';
 import 'live_match_screen_pakistan_india.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // Firebase connection test
+  FirebaseFirestore.instance.collection('test').get().then((value) {
+    print("Firebase Connected: ${value.docs.length} documents found");
+  }).catchError((error) {
+    print("Firebase Connection Error: $error");
+  });
+
   runApp(const CricketApp());
 }
 
@@ -26,6 +35,9 @@ class CricketApp extends StatelessWidget {
     );
   }
 }
+
+// Rest of your code remains unchanged
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

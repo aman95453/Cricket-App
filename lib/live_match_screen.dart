@@ -1,31 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LiveMatchScreen extends StatefulWidget {
-  const LiveMatchScreen({Key? key}) : super(key: key);
+  const LiveMatchScreen({super.key});
 
   @override
   State<LiveMatchScreen> createState() => _LiveMatchScreenState();
 }
 
 class _LiveMatchScreenState extends State<LiveMatchScreen> {
-  late BetterPlayerController _betterPlayerController;
+  BetterPlayerController? _betterPlayerController;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    fetchStreamUrl();
+  }
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky); // Hide notification bar during video playback
+  Future<void> fetchStreamUrl() async {
+    try {
+      DocumentSnapshot document = await FirebaseFirestore.instance.collection('live').doc('match').get();
+      if (document.exists && document.data() != null) {
+        String url = (document.data() as Map<String, dynamic>)['url'];
+        if (!mounted) return;
+        setupPlayer(url);
+      } else {
+        showError('Stream not found.');
+      }
+    } catch (e) {
+      showError('Error fetching stream URL.');
+    }
+  }
 
+  void setupPlayer(String url) {
     BetterPlayerConfiguration betterPlayerConfiguration = BetterPlayerConfiguration(
-      fit: BoxFit.fill, // Maintain 16:9 aspect ratio in portrait
+      fit: BoxFit.fill,
       autoPlay: true,
       looping: false,
-      fullScreenByDefault: false,
       allowedScreenSleep: false,
       expandToFill: true,
-      aspectRatio: 16 / 9, // Set 16:9 aspect ratio for portrait
+      aspectRatio: 16 / 9,
       controlsConfiguration: BetterPlayerControlsConfiguration(
         backgroundColor: Colors.black,
         controlBarColor: Colors.transparent,
@@ -39,28 +57,44 @@ class _LiveMatchScreenState extends State<LiveMatchScreen> {
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      "https://cdn12isb.tamashaweb.com:8087/jazzauth/geoNews-abr/playlist.m3u8",
+      url,
       videoFormat: BetterPlayerVideoFormat.hls,
     );
 
-    _betterPlayerController = BetterPlayerController(
-      betterPlayerConfiguration,
-      betterPlayerDataSource: dataSource,
+    _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+    _betterPlayerController!.setupDataSource(dataSource).then((_) {
+      if (mounted) setState(() => _isLoading = false);
+    }).catchError((error) {
+      showError('Failed to load video.');
+    });
+  }
+
+  void showError(String message) {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BetterPlayer(controller: _betterPlayerController),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _betterPlayerController != null
+          ? BetterPlayer(controller: _betterPlayerController!)
+          : const Center(child: Text("No video available")),
       backgroundColor: Colors.black,
     );
   }
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge); // Restore system UI after playback
-    _betterPlayerController.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _betterPlayerController?.dispose();
     super.dispose();
   }
 }

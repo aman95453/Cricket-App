@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LiveMatchScreenPakistanIndia extends StatefulWidget {
   const LiveMatchScreenPakistanIndia({Key? key}) : super(key: key);
@@ -10,22 +11,38 @@ class LiveMatchScreenPakistanIndia extends StatefulWidget {
 }
 
 class _LiveMatchScreenPakistanIndiaState extends State<LiveMatchScreenPakistanIndia> {
-  late BetterPlayerController _betterPlayerController;
+  BetterPlayerController? _betterPlayerController;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    fetchStreamUrl();
+  }
 
+  Future<void> fetchStreamUrl() async {
+    try {
+      DocumentSnapshot document = await FirebaseFirestore.instance.collection('live').doc('match2').get();
+      if (document.exists && document.data() != null) {
+        String url = document['url'];
+        if (!mounted) return;
+        setupPlayer(url);
+      } else {
+        showError('Stream not found.');
+      }
+    } catch (e) {
+      showError('Error fetching stream URL.');
+    }
+  }
+
+  void setupPlayer(String url) {
     BetterPlayerConfiguration betterPlayerConfiguration = BetterPlayerConfiguration(
       fit: BoxFit.fill,
       autoPlay: true,
       looping: false,
       expandToFill: true,
-      deviceOrientationsOnFullScreen: [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
+      deviceOrientationsOnFullScreen: [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
       allowedScreenSleep: false,
       controlsConfiguration: BetterPlayerControlsConfiguration(
         backgroundColor: Colors.black,
@@ -40,28 +57,40 @@ class _LiveMatchScreenPakistanIndiaState extends State<LiveMatchScreenPakistanIn
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      'https://cdn12isb.tamashaweb.com:8087/jazzauth/humTV-abr/live/vsat-humtv-M/chunks.m3u8',
+      url,
       videoFormat: BetterPlayerVideoFormat.hls,
     );
 
-    _betterPlayerController = BetterPlayerController(
-      betterPlayerConfiguration,
-      betterPlayerDataSource: dataSource,
-    );
+    _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
+    _betterPlayerController!.setupDataSource(dataSource).then((_) {
+      if (mounted) setState(() => _isLoading = false);
+    }).catchError((error) {
+      showError('Failed to load video.');
+    });
   }
 
-  @override
-  void dispose() {
-    _betterPlayerController.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    super.dispose();
+  void showError(String message) {
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: BetterPlayer(controller: _betterPlayerController),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _betterPlayerController != null
+          ? BetterPlayer(controller: _betterPlayerController!)
+          : const Center(child: Text("No video available")),
     );
+  }
+
+  @override
+  void dispose() {
+    _betterPlayerController?.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    super.dispose();
   }
 }
