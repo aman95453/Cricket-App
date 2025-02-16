@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'live_match_screen.dart';
-import 'live_match_screen_pakistan_india.dart'; // Import the new screen
+import 'live_match_screen_pakistan_india.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const CricketApp());
 }
 
@@ -70,6 +73,19 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Expanded(child: MatchList()),
+            // Your name added at the bottom
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Aman Ullah',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white.withAlpha(204), // 80% opacity (255 * 0.8 = 204)
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
           ],
         ),
       ),

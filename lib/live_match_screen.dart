@@ -39,7 +39,7 @@ class _LiveMatchScreenState extends State<LiveMatchScreen> {
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      "https://muc2.mylife1.top:8088/live/webcricm05/playlist.m3u8?vidictid=201344412598&id=114516&pk=d17cea96af0731f9c2b883bd5bd0d75a0deebed24cbb21b4ef64136b7beefa450feb9c38c8406e3b75059d0695869b9ab9102483c4724e2eae580032a2302fc1",
+      "https://cdn12isb.tamashaweb.com:8087/jazzauth/geoNews-abr/playlist.m3u8",
       videoFormat: BetterPlayerVideoFormat.hls,
     );
 

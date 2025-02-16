@@ -15,7 +15,7 @@ class _LiveMatchScreenPakistanIndiaState extends State<LiveMatchScreenPakistanIn
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     BetterPlayerConfiguration betterPlayerConfiguration = BetterPlayerConfiguration(
       fit: BoxFit.fill,
@@ -40,7 +40,7 @@ class _LiveMatchScreenPakistanIndiaState extends State<LiveMatchScreenPakistanIn
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      'https://mut1.mylife1.top:8088/live/webcricu19/playlist.m3u8?vidictid=201349344524&id=115680&pk=d17cea96af0731f9c2b883bd5bd0d75a0deebed24cbb21b4ef64136b7beefa450feb9c38c8406e3b75059d0695869b9ab9102483c4724e2eae580032a2302fc1',
+      'https://cdn12isb.tamashaweb.com:8087/jazzauth/humTV-abr/live/vsat-humtv-M/chunks.m3u8',
       videoFormat: BetterPlayerVideoFormat.hls,
     );
 
@@ -53,7 +53,7 @@ class _LiveMatchScreenPakistanIndiaState extends State<LiveMatchScreenPakistanIn
   @override
   void dispose() {
     _betterPlayerController.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     super.dispose();
   }
 
