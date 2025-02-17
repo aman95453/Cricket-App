@@ -25,17 +25,34 @@ dependencies:
   firebase_database: ^11.3.2
   firebase_auth: ^5.4.2
   cloud_firestore: ^5.6.3
+  wakelock_plus: ^1.2.10
+  flutter_native_splash: ^2.3.2
+  flutter_launcher_icons: ^0.14.3    # Added flutter_launcher_icons here
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
 
+flutter_native_splash:
+  color: "#ffffff"
+  image: lib/assets/icon/app_icon.png  # Use the correct image path
+  android: true
+  ios: true
+  web: false
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: lib/assets/icon/app_icon.jpg  # Added flutter_launcher_icons config
+
 flutter:
   uses-material-design: true
 
   assets:
     - lib/assets/fonts/SportyFont.otf
+    - lib/assets/icon/app_icon.png        # Updated path for the app icon
 
   fonts:
     - family: SportyFont

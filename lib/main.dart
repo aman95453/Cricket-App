@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';  // Import Firestore for testing
-import 'live_match_screen.dart';
-import 'live_match_screen_pakistan_india.dart';
+import 'match1.dart';
+import 'match2.dart';
+import 'match3.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // Firebase connection test
+  // Firebase connection test (consider replacing print with logger in production)
   FirebaseFirestore.instance.collection('test').get().then((value) {
-    print("Firebase Connected: ${value.docs.length} documents found");
   }).catchError((error) {
-    print("Firebase Connection Error: $error");
   });
 
   runApp(const CricketApp());
@@ -35,9 +34,6 @@ class CricketApp extends StatelessWidget {
     );
   }
 }
-
-// Rest of your code remains unchanged
-
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -85,7 +81,6 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Expanded(child: MatchList()),
-            // Your name added at the bottom
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
@@ -93,7 +88,7 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withAlpha(204), // 80% opacity (255 * 0.8 = 204)
+                  color: Colors.white.withAlpha(204),
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -110,14 +105,14 @@ class MatchList extends StatelessWidget {
 
   final List<Map<String, String>> matches = const [
     {
-      'team1': 'Australia',
-      'team2': 'Sri Lanka',
-      'date': '16 Feb 2025',
-      'venue': 'B. Damadesa Stadium, Colombo',
-      'status': 'Live',
-      'matchType': '3rd Test',
-      'team1Logo': 'https://flagcdn.com/w320/au.png',
-      'team2Logo': 'https://flagcdn.com/w320/lk.png',
+      'team1': 'Pakistan',
+      'team2': 'New Zealand',
+      'date': '19 Feb 2025',
+      'venue': 'National Stadium, Karachi',
+      'status': 'Upcoming',
+      'matchType': 'Champions Trophy',
+      'team1Logo': 'https://flagcdn.com/w320/pk.png',
+      'team2Logo': 'https://flagcdn.com/w320/nz.png',
     },
     {
       'team1': 'India',
@@ -128,6 +123,16 @@ class MatchList extends StatelessWidget {
       'matchType': 'Champions Trophy',
       'team1Logo': 'https://flagcdn.com/w320/in.png',
       'team2Logo': 'https://flagcdn.com/w320/pk.png',
+    },
+    {
+      'team1': 'Bangladesh',
+      'team2': 'India',
+      'date': '20 Feb 2025',
+      'venue': 'Dubai Cricket Stadium, UAE',
+      'status': 'Upcoming',
+      'matchType': 'Champions Trophy',
+      'team1Logo': 'https://flagcdn.com/w320/bd.png',
+      'team2Logo': 'https://flagcdn.com/w320/in.png',
     },
   ];
 
@@ -142,18 +147,26 @@ class MatchList extends StatelessWidget {
 
         return GestureDetector(
           onTap: () {
-            if (match['team1'] == 'India' && match['team2'] == 'Pakistan') {
+            if (match['team1'] == 'Pakistan' && match['team2'] == 'New Zealand') {
+              // Navigate to Match3Screen for Pakistan vs New Zealand
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const LiveMatchScreenPakistanIndia(),
+                  builder: (context) => const Match3Screen(),
+                ),
+              );
+            } else if (match['team1'] == 'India' && match['team2'] == 'Pakistan') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Match2(), // Updated to Match2
                 ),
               );
             } else {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const LiveMatchScreen(),
+                  builder: (context) => const Match1(), // Updated to Match1
                 ),
               );
             }
@@ -161,142 +174,123 @@ class MatchList extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.grey[900], // Set the card background to grey 900
+              borderRadius: BorderRadius.circular(24), // More cornered shape
               boxShadow: [
                 BoxShadow(
-                  color: const Color.fromARGB(128, 0, 0, 0),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
+                  color: Colors.blueAccent.withAlpha(100),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 8),
+                ),
               ],
             ),
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            match['matchType']!,
-                            style: const TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          if (isLive)
-                            Row(
-                              children: [
-                                Container(
-                                  width: 10,
-                                  height: 10,
-                                  margin: const EdgeInsets.only(right: 6),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const Text(
-                                  'LIVE',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
+                      Text(
+                        match['matchType']!,
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      if (isLive)
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              margin: const EdgeInsets.only(right: 6),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const Text(
+                              'LIVE',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
                         children: [
-                          Column(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(match['team1Logo']!),
-                                radius: 30,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                match['team1']!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(match['team1Logo']!),
+                            radius: 24,
                           ),
-                          const Text(
-                            'VS',
-                            style: TextStyle(
+                          const SizedBox(height: 4),
+                          Text(
+                            match['team1']!,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 14,
                             ),
-                          ),
-                          Column(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(match['team2Logo']!),
-                                radius: 30,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                match['team2']!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Date: ${match['date']}',
-                        style: const TextStyle(color: Colors.grey),
+                      const Text(
+                        'VS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Venue: ${match['venue']}',
-                        style: const TextStyle(color: Colors.grey),
+                      Column(
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(match['team2Logo']!),
+                            radius: 24,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            match['team2']!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 4,
-                      horizontal: 10,
-                    ),
-                    decoration: const BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        bottomRight: Radius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Tap to Watch',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Date: ${match['date']}',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    'Venue: ${match['venue']}',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
