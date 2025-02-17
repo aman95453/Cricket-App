@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
-import 'match1.dart';
-import 'match2.dart';
-import 'match3.dart';
+import 'match1.dart'; // Import Match1Screen
+import 'match2.dart'; // Import Match2Screen
+import 'match3.dart'; // Import Match3Screen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -113,7 +113,7 @@ class MatchList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collectionGroup('matches').snapshots(),
+      stream: FirebaseFirestore.instance.collection('matches').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -136,162 +136,160 @@ class MatchList extends StatelessWidget {
             final match = matches[index].data() as Map<String, dynamic>;
             final isLive = match['status'] == 'Live';
 
-            return _buildMatchCard(match, isLive, context);
+            return GestureDetector(
+              onTap: () {
+                if (index == 0) {
+                  // Navigate to Match1Screen for the first card
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Match1(matchData: match),
+                    ),
+                  );
+                } else if (index == 1) {
+                  // Navigate to Match2Screen for the second card
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Match2(matchData: match),
+                    ),
+                  );
+                } else if (index == 2) {
+                  // Navigate to Match3Screen for the third card
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Match3Screen(matchData: match),
+                    ),
+                  );
+                }
+              },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[900], // Set the card background to grey 900
+                  borderRadius: BorderRadius.circular(24), // More cornered shape
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blueAccent.withAlpha(100),
+                      blurRadius: 15,
+                      spreadRadius: 1,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            match['matchType'],
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          if (isLive)
+                            Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  margin: const EdgeInsets.only(right: 6),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const Text(
+                                  'LIVE',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(match['team1Logo']),
+                                radius: 24,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                match['team1'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Text(
+                            'VS',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(match['team2Logo']),
+                                radius: 24,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                match['team2'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Date: ${match['date']}',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Venue: ${match['venue']}',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
           },
         );
       },
-    );
-  }
-
-  Widget _buildMatchCard(Map<String, dynamic> match, bool isLive, BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (match['team1'] == 'Pakistan' && match['team2'] == 'New Zealand') {
-          // Navigate to Match3Screen for Pakistan vs New Zealand
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Match3Screen(),
-            ),
-          );
-        } else if (match['team1'] == 'India' && match['team2'] == 'Pakistan') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Match2(), // Updated to Match2
-            ),
-          );
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Match1(), // Updated to Match1
-            ),
-          );
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: Colors.grey[900], // Set the card background to grey 900
-          borderRadius: BorderRadius.circular(24), // More cornered shape
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blueAccent.withAlpha(100),
-              blurRadius: 15,
-              spreadRadius: 1,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    match['matchType'],
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  if (isLive)
-                    Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          margin: const EdgeInsets.only(right: 6),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const Text(
-                          'LIVE',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(match['team1Logo']),
-                        radius: 24,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        match['team1'],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Text(
-                    'VS',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(match['team2Logo']),
-                        radius: 24,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        match['team2'],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Date: ${match['date']}',
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Venue: ${match['venue']}',
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class Match3Screen extends StatefulWidget {
-  const Match3Screen({super.key});
+  const Match3Screen({super.key, required Map<String, dynamic> matchData});
 
   @override
   State<Match3Screen> createState() => _Match3ScreenState();

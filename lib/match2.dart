@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class Match2 extends StatefulWidget {
-  const Match2({super.key});
+  const Match2({super.key, required Map<String, dynamic> matchData});
 
   @override
   State<Match2> createState() => _Match2State();
