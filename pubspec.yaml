@@ -37,15 +37,18 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#ffffff"
-  image: lib/assets/icon/app_icon.png  # Use the correct image path
+  image: lib/assets/icon/app_icon.png
   android: true
   ios: true
   web: false
+  android_gravity: center
+  fullscreen: true
+  # Immediately remove splash when Flutter starts
 
 flutter_icons:
   android: true
   ios: true
-  image_path: lib/assets/icon/app_icon.jpg  # Added flutter_launcher_icons config
+  image_path: lib/assets/icon/app_icon.png  # Added flutter_launcher_icons config
 
 flutter:
   uses-material-design: true

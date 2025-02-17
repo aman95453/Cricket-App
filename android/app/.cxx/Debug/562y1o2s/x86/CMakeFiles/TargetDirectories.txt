@@ -1,0 +1,2 @@
+C:/Users/AmanUllah/StudioProjects/cricket_app/android/app/.cxx/Debug/562y1o2s/x86/CMakeFiles/edit_cache.dir
+C:/Users/AmanUllah/StudioProjects/cricket_app/android/app/.cxx/Debug/562y1o2s/x86/CMakeFiles/rebuild_cache.dir
