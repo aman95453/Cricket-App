@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 import 'match1.dart'; // Import Match1Screen
 import 'match2.dart'; // Import Match2Screen
 import 'match3.dart'; // Import Match3Screen
+import 'match4.dart'; // Import Match4Screen
+import 'match5.dart'; // Import Match5Screen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -160,6 +162,22 @@ class MatchList extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => Match3Screen(matchData: match),
+                    ),
+                  );
+                } else if (index == 3) {
+                  // Navigate to Match4Screen for the fourth card
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Match4(matchData: match),
+                    ),
+                  );
+                } else if (index == 4) {
+                  // Navigate to Match5Screen for the fifth card
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Match5(matchData: match),
                     ),
                   );
                 }
